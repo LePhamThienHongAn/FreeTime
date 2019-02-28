@@ -1,5 +1,5 @@
 Get Debug Symbol Here:
-- Thttps://wiki.ubuntu.com/Kernel/Systemtap
+- https://wiki.ubuntu.com/Kernel/Systemtap
 - CACHE:
   - GPG key import
     - >#16.04 and higher
