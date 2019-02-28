@@ -38,7 +38,7 @@ Setup VMWARE machine (DEBUG TARGET):
 Debug
 
 -   Turn on the DEBUG TARGET
--   run gdb (on other computer)
--   enter these command
+-   Run gdb (on other computer)
+-   Enter these commands
     -   > symbol-file [path-to-symbol-file]  
         > target remote [ip-of-machine-running-vmware]:8832
