@@ -41,4 +41,4 @@ Debug
 -   Run gdb (on other computer)
 -   Enter these commands
     -   > symbol-file [path-to-symbol-file]  
-        > target remote [ip-of-machine-running-vmware]:8832
+        > target remote [ip-of-machine-running-vmware]:8864
