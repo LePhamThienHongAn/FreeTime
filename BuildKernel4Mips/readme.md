@@ -103,4 +103,4 @@ qemu-system-mips \
 -nographic
 ```
 # Just in case ... 404
-https://drive.google.com/drive/folders/1wUMNLL79QGDqW3N4Sn2cROjHAIhcUVcG?usp=sharing
+https://drive.google.com/drive/u/3/folders/1wUMNLL79QGDqW3N4Sn2cROjHAIhcUVcG
