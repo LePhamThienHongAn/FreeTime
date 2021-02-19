@@ -102,3 +102,5 @@ qemu-system-mips \
 -append "root=/dev/sda init=/bin/sh" \
 -nographic
 ```
+# Just in case ...
+https://drive.google.com/drive/folders/1wUMNLL79QGDqW3N4Sn2cROjHAIhcUVcG?usp=sharing
