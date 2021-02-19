@@ -7,6 +7,7 @@ Hệ điều hành hoàn chỉnh cần kernel và image ổ cứng chứa sẵn 
 # Prepare
 ## Chuẩn bị môi trường
 ```
+apt install git
 apt install make
 apt install libncursesw5-dev libssl-dev
 apt install qemu-system-mips
@@ -33,7 +34,7 @@ cd ..
 ## Build
 ### Build kernel
 Các version kernel: https://mirrors.edge.kernel.org/pub/linux/kernel/ <br>
-Tải kernel 4.8.1 và giải nén
+Tải source kernel 4.8.1 và giải nén
 ```
 mkdir linux_kernel
 cd linux_kernel
@@ -51,5 +52,31 @@ make -j4 ARCH=mips CROSS_COMPILE=../../compiler/mips-img-linux-gnu/2016.05-08/bi
 `make menuconfig` lưu ý các cấu hình quan trọng như endianness, CPU. Khuyến nghị chọn CPU mips32 Release 6 vì qemu hỗ trợ CPU này. Chạy lệnh `qemu-system-mips -cpu help` để biết qemu-system-mips hỗ trợ những CPU nào <br>
 `make -j4` bắt đầu build kernel
 
+Copy vmlinux về thư mục riêng
+```
+mkdir ../../final_result
+cp vmlinux ../../final_result/vmlinux-4.8.1
+cd ../../
+```
 
 
+### Build rootfs
+Tải source busybox buildroot
+```
+mkdir busybox_base
+cd busybox_base
+git clone git://git.busybox.net/buildroot buildroot
+```
+Build busybox buildroot
+```
+cd buildroot
+make ARCH=mips CROSS_COMPILE=../../compiler/mips-img-linux-gnu/2016.05-08/bin/mips-img-linux-gnu menuconfig 
+```
+`make menuconfig` lưu ý chọn các option
+```
+Target options  --->
+    Target Architecture  --->
+        MIPS (big endian)
+    Target Architecture Variant  --->
+        Generic MIPS32R6
+```
