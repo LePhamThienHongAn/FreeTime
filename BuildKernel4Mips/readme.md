@@ -31,8 +31,8 @@ tar -xf Codescape.GNU.Tools.Package.2016.05-08.for.MIPS.IMG.Linux.CentOS-5.x86_6
 cd ..
 ```
 
-## Build
-### Build kernel
+# Build
+## Build kernel
 Các version kernel: https://mirrors.edge.kernel.org/pub/linux/kernel/ <br>
 Tải source kernel 4.8.1 và giải nén
 ```
@@ -59,8 +59,7 @@ cp vmlinux ../../final_result/vmlinux-4.8.1
 cd ../../
 ```
 
-
-### Build rootfs
+## Build rootfs
 Tải source busybox buildroot
 ```
 mkdir busybox_base
@@ -70,7 +69,11 @@ git clone git://git.busybox.net/buildroot buildroot
 Build busybox buildroot
 ```
 cd buildroot
-make ARCH=mips CROSS_COMPILE=../../compiler/mips-img-linux-gnu/2016.05-08/bin/mips-img-linux-gnu menuconfig 
+make ARCH=mips CROSS_COMPILE=../../compiler/mips-img-linux-gnu/2016.05-08/bin/mips-img-linux-gnu menuconfig
+make ARCH=mips CROSS_COMPILE=../../compiler/mips-img-linux-gnu/2016.05-08/bin/mips-img-linux-gnu
+cp output/images/rootfs.tar ../
+cd ..
+cd ..
 ```
 `make menuconfig` lưu ý chọn các option
 ```
@@ -79,4 +82,24 @@ Target options  --->
         MIPS (big endian)
     Target Architecture Variant  --->
         Generic MIPS32R6
+```
+# Make img with busybox rootfs
+```
+cd final_result
+qemu-img create linux-4.8.1-mips32-r6.ext2 512M
+mkfs.ext2 linux-4.8.1-mips32-r6.ext2
+mkdir tmp_mnt_rfs
+mount linux-4.8.1-mips32-r6.ext2 tmp_mnt_rfs -t ext2
+tar -C tmp_mnt_rfs -xvf ../busybox_base/rootfs.tar
+umount tmp_mnt_rfs
+```
+# RUN!
+```
+qemu-system-mips \
+-M malta \
+-cpu mips32r6-generic \
+-kernel vmlinux-4.8.1-mips32-r6 \
+-hda rootfs.ext2 \
+-append "root=/dev/sda console=ttyS0 init=/bin/sh" \
+-nographic
 ```
