@@ -8,7 +8,7 @@ Hệ điều hành hoàn chỉnh cần kernel và image ổ cứng chứa sẵn 
 ## Chuẩn bị môi trường
 ```
 apt install git
-apt install make
+apt install make gcc g++
 apt install libncursesw5-dev libssl-dev
 apt install qemu-system-mips
 apt install unzip
@@ -45,17 +45,17 @@ Build kernel 4.8.1
 ```
 cd linux-4.8.1
 make ARCH=mips CROSS_COMPILE=../../compiler/mips-img-linux-gnu/2016.05-08/bin/mips-img-linux-gnu- malta_defconfig 
-make ARCH=mips CROSS_COMPILE=../../compiler/mips-img-linux-gnu/2016.05-08/bin/mips-img-linux-gnu menuconfig 
-make -j4 ARCH=mips CROSS_COMPILE=../../compiler/mips-img-linux-gnu/2016.05-08/bin/mips-img-linux-gnu
+make ARCH=mips CROSS_COMPILE=../../compiler/mips-img-linux-gnu/2016.05-08/bin/mips-img-linux-gnu- menuconfig 
+make -j4 ARCH=mips CROSS_COMPILE=../../compiler/mips-img-linux-gnu/2016.05-08/bin/mips-img-linux-gnu-
 ```
 `make malta_defconfig` chọn loại machine mặc định là malta <br>
-`make menuconfig` lưu ý các cấu hình quan trọng như endianness, CPU. Khuyến nghị chọn CPU mips32 Release 6 vì qemu hỗ trợ CPU này. Chạy lệnh `qemu-system-mips -cpu help` để biết qemu-system-mips hỗ trợ những CPU nào <br>
+`make menuconfig` lưu ý các cấu hình quan trọng như `endianness`, `CPU`. Khuyến nghị chọn `CPU mips32 Release 6` vì qemu hỗ trợ CPU này. Chạy lệnh `qemu-system-mips -cpu help` để biết qemu-system-mips hỗ trợ những CPU nào. <br>
 `make -j4` bắt đầu build kernel
 
 Copy vmlinux về thư mục riêng
 ```
 mkdir ../../final_result
-cp vmlinux ../../final_result/vmlinux-4.8.1
+cp vmlinux ../../final_result/vmlinux-4.8.1-mips32r6
 cd ../../
 ```
 
@@ -69,11 +69,10 @@ git clone git://git.busybox.net/buildroot buildroot
 Build busybox buildroot
 ```
 cd buildroot
-make ARCH=mips CROSS_COMPILE=../../compiler/mips-img-linux-gnu/2016.05-08/bin/mips-img-linux-gnu menuconfig
-make ARCH=mips CROSS_COMPILE=../../compiler/mips-img-linux-gnu/2016.05-08/bin/mips-img-linux-gnu
+make ARCH=mips CROSS_COMPILE=../../compiler/mips-img-linux-gnu/2016.05-08/bin/mips-img-linux-gnu- menuconfig
+make ARCH=mips CROSS_COMPILE=../../compiler/mips-img-linux-gnu/2016.05-08/bin/mips-img-linux-gnu-
 cp output/images/rootfs.tar ../
-cd ..
-cd ..
+cd ../../
 ```
 `make menuconfig` lưu ý chọn các option
 ```
@@ -86,10 +85,10 @@ Target options  --->
 # Make img with busybox rootfs
 ```
 cd final_result
-qemu-img create linux-4.8.1-mips32-r6.ext2 512M
-mkfs.ext2 linux-4.8.1-mips32-r6.ext2
+qemu-img create vmlinux-4.8.1-mips32r6.ext2 512M
+mkfs.ext2 vmlinux-4.8.1-mips32r6.ext2
 mkdir tmp_mnt_rfs
-mount linux-4.8.1-mips32-r6.ext2 tmp_mnt_rfs -t ext2
+mount vmlinux-4.8.1-mips32r6.ext2 tmp_mnt_rfs -t ext2
 tar -C tmp_mnt_rfs -xvf ../busybox_base/rootfs.tar
 umount tmp_mnt_rfs
 ```
@@ -98,8 +97,8 @@ umount tmp_mnt_rfs
 qemu-system-mips \
 -M malta \
 -cpu mips32r6-generic \
--kernel vmlinux-4.8.1-mips32-r6 \
--hda rootfs.ext2 \
--append "root=/dev/sda console=ttyS0 init=/bin/sh" \
+-kernel vmlinux-4.8.1-mips32r6 \
+-hda vmlinux-4.8.1-mips32r6.ext2 \
+-append "root=/dev/sda init=/bin/sh" \
 -nographic
 ```
