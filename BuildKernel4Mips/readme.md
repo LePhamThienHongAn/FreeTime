@@ -98,7 +98,7 @@ qemu-system-mips \
 -M malta \
 -cpu mips32r6-generic \
 -kernel vmlinux-4.8.1-mips32r6 \
--hda vmlinux-4.8.1-mips32r6.ext2 \
+-hda linux-4.8.1-mips32r6.ext2 \
 -append "root=/dev/sda init=/bin/sh" \
 -nographic
 ```
