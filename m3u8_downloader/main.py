@@ -1,9 +1,7 @@
 #Config
-m3u8_main = "https://b-g-ca-3.betterstream.co:2222/v3-hls-playback/2c54fee8575bd3446d9f96cbb807b1fccc028f593a57cac00e4381fefb77fb23c5ef650be066c90f8eafee5d4a34e989312ce1d807a06643764298435d8f29e906ed6f0089c9aca23f0c0f531e0aa433207482896ce939edf60cff043777d16f9b87c5e58b018e8d2d51df03549d08c2d1d6788185d342d2e001d4525bfc9db0219de9226552ce9223907ec2a3fdc2028de8303423f9b962d8265ca7fdfe3e12df544fadf84230be2cd833fe9baf6a4ef511938d0c973141bd8d27656ac073a1/1080/index.m3u8"
+m3u8_main = "https://b-g-eu-8.betterstream.co:2222/v3-hls-playback/2c54fee8575bd3446d9f96cbb807b1fccc028f593a57cac00e4381fefb77fb23c5ef650be066c90f8eafee5d4a34e989312ce1d807a06643764298435d8f29e9588750f13dee1175b080688427a5e40bca0600e7fe0dc4338dc63e84d3cbaa6db39a318dd7d19c2f16d77ffc5ba9d10f4ed20d4e912a82246ed31cb0408d536a963717a18313ef1cb14567e272b77fe04e1f215b449c20e6a6f185bddb4dace01eeb2927d0a037e94a180ca84abf67559480253e73a25abf418d46e484e48800/1080/index.m3u8"
 maxThread = 50
-
-
-
+skip = 0
 
 base_url = m3u8_main[:-m3u8_main[::-1].find("/")]
 
@@ -21,11 +19,13 @@ for line in data:
 
 from threading import Thread, Lock
 
+total = len(urls)
+segment_count = 0
 threadCount = 0
 mutex = Lock()
 def download(url, segment):
     #Control thread num
-    global threadCount, urls
+    global threadCount, urls, segment_count
     mutex.acquire()
     threadCount += 1
     mutex.release()
@@ -49,6 +49,8 @@ def download(url, segment):
 
     mutex.acquire()
     threadCount -= 1
+    segment_count += 1
+    print("%s/%s" % (segment_count,total))
     mutex.release()
 
 
@@ -56,11 +58,10 @@ def download(url, segment):
 threads = []
 count = 0
 for url in urls:
-    threads += [Thread(target = download, args = (url, segment[count], ))]
+    if count >= skip:
+        threads += [Thread(target = download, args = (url, segment[count], ))]
     count += 1
 
-count = 0
-total = len(urls)
 for thread in threads:
     thread.start()
 
@@ -71,8 +72,6 @@ for thread in threads:
             break
         mutex.release()
     mutex.release()
-    count += 1
-    print("%d/%d" % (count, total))
 
 import time
 while threadCount != 0:
